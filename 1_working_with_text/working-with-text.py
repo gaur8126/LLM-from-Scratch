@@ -28,7 +28,7 @@ class GPTDatasetV1(Dataset):
     
 
 # data loader 
-def create_dataloader_v1(txt, batch_size=4, max_length=256,
+def create_dataloader_v1(txt, batch_size=4, max_length=768,
                          stride=128, shuffle=True, drop_last= True, 
                          num_workers=0):
     tokenizer = tiktoken.get_encoding("gpt2")
@@ -47,21 +47,25 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256,
 dataloader = create_dataloader_v1(raw_text, batch_size=8)
 
 data_iter = iter(dataloader)
-inputs, targets = next(data_iter) # shape will be [8,256]
+inputs, targets = next(data_iter) # shape will be [8,768]
 
+# print(inputs.shape) [8, 768]
 
 vocab_size = 50257
-output_dim = 256
+output_dim = 768
 token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
-# print(token_embedding_layer) , shape - [50257, 256]
+# print(token_embedding_layer) , #shape - [50257, 768]
 
-token_embeddings = token_embedding_layer(inputs) # shape - [8,256,256]
+token_embeddings = token_embedding_layer(inputs) # shape - [8,768,768]
+# print(token_embeddings.shape)
 
-context_length = 256
+context_length = 768
 pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
-pos_embedding = pos_embedding_layer(torch.arange(context_length)) # shape -[256,256]
+pos_embedding = pos_embedding_layer(torch.arange(context_length)) # shape -[768,768]
+
+# print(pos_embedding.shape)
 
 
-input_embeddings = token_embeddings + pos_embedding # shape [8, 256, 256]
+input_embeddings = token_embeddings + pos_embedding # shape [8, 768, 768]
 
-print(input_embeddings)
+print(input_embeddings.shape) # [8, 768]
